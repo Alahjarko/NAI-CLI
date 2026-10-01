@@ -1,0 +1,22 @@
+.gradle/
+.kotlin/
+build/
+
+# 本地覆盖，不进版本库
+local.properties
+
+# macOS
+.DS_Store
+
+# Local credentials, account data, and private proxy resources
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.db
+*.db-*
+*.sqlite*
+audit.log
+public_proxy_nodes.enc

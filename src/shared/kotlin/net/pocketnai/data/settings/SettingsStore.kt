@@ -1,0 +1,115 @@
+package net.pocketnai.data.settings
+
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import net.pocketnai.core.platform.KeyValueStore
+import net.pocketnai.core.platform.PlatformEnvironment
+import net.pocketnai.domain.billing.SubscriptionOverride
+import net.pocketnai.domain.model.ThemeMode
+
+/**
+ * 本地设置。
+ *
+ * 这里不保存任何敏感内容：Token 走 [net.pocketnai.data.security.CredentialStore]，
+ * 历史与参数走 Room，本类只存行为开关。
+ *
+ * 移植对照：Android 的 `Context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE)`
+ * 换成 [PlatformEnvironment.keyValueStore]，首选项文件名、全部键名与默认值**逐字保持不变** ——
+ * 两端的设置是同一份语义，改键名等于让老用户的设置静默失效。
+ */
+class SettingsStore(environment: PlatformEnvironment) {
+
+    private val prefs: KeyValueStore = environment.keyValueStore(PREFS_NAME)
+
+    private val _streamingPreviewEnabled = MutableStateFlow(
+        // 默认关闭（2026-09-16）：功能本身已验证可用，但真机观感与官方网页版有明显差距
+        // （网页版对中间图做过平滑处理，我们拿到的是原始采样帧，且生成只要几秒时一闪而过），
+        // 用户决定默认不启用。想试的人可以在设置页手动打开。
+        prefs.getBoolean(KEY_STREAMING_ENABLED, false),
+    )
+
+    /** 流式中间预览开关，设置页可直接观察。 */
+    val streamingPreviewEnabled: StateFlow<Boolean> = _streamingPreviewEnabled.asStateFlow()
+
+    private val _themeMode = MutableStateFlow(
+        ThemeMode.fromNameOrDefault(prefs.getString(KEY_THEME_MODE, null)),
+    )
+
+    /** 主题模式，默认跟随系统。 */
+    val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
+
+    fun setThemeMode(mode: ThemeMode) {
+        prefs.edit { putString(KEY_THEME_MODE, mode.name) }
+        _themeMode.value = mode
+    }
+
+    private val _subscriptionOverride = MutableStateFlow(
+        SubscriptionOverride.fromNameOrDefault(prefs.getString(KEY_SUBSCRIPTION_OVERRIDE, null)),
+    )
+
+    /**
+     * 订阅等级的手动指定（默认"自动读取"）。
+     *
+     * 这是计费的一部分，因此**必须持久化**：用户设成 Opus 之后重启应用，
+     * 生成按钮上的报价不能又变回"无订阅"的算法。
+     */
+    val subscriptionOverride: StateFlow<SubscriptionOverride> = _subscriptionOverride.asStateFlow()
+
+    fun setSubscriptionOverride(override: SubscriptionOverride) {
+        prefs.edit { putString(KEY_SUBSCRIPTION_OVERRIDE, override.name) }
+        _subscriptionOverride.value = override
+    }
+
+    fun setStreamingPreviewEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_STREAMING_ENABLED, enabled) }
+        _streamingPreviewEnabled.value = enabled
+        if (enabled) resetStreamingFailures()
+    }
+
+    /**
+     * 被"稍后"处理过的更新版本（构建号）。
+     *
+     * 持久化是刻意的：用户在对话框上点了"稍后"，下次启动**不该**为同一个构建
+     * 再弹一次；只有出现更新的构建（构建号更大）才会重新提示。
+     */
+    fun updateDismissedVersionCode(): Int = prefs.getInt(KEY_UPDATE_DISMISSED, 0)
+
+    fun setUpdateDismissedVersionCode(versionCode: Int) {
+        prefs.edit { putInt(KEY_UPDATE_DISMISSED, versionCode) }
+    }
+
+    /**
+     * 记录一次流式协议失败。
+     *
+     * 规划书 6.3：连续失败达到阈值后，只关闭**未来任务**的流式预览，
+     * 不重试刚刚失败的付费任务。返回 true 表示本次调用触发了自动关闭。
+     */
+    fun recordStreamingFailure(): Boolean {
+        val failures = prefs.getInt(KEY_STREAMING_FAILURES, 0) + 1
+        prefs.edit { putInt(KEY_STREAMING_FAILURES, failures) }
+        if (failures >= STREAMING_FAILURE_THRESHOLD && _streamingPreviewEnabled.value) {
+            setStreamingPreviewEnabled(false)
+            return true
+        }
+        return false
+    }
+
+    fun resetStreamingFailures() {
+        prefs.edit { putInt(KEY_STREAMING_FAILURES, 0) }
+    }
+
+    fun streamingFailures(): Int = prefs.getInt(KEY_STREAMING_FAILURES, 0)
+
+    private companion object {
+        const val PREFS_NAME = "pocketnai_settings"
+        const val KEY_STREAMING_ENABLED = "streaming_preview_enabled"
+        const val KEY_STREAMING_FAILURES = "streaming_consecutive_failures"
+        const val KEY_THEME_MODE = "theme_mode"
+        const val KEY_SUBSCRIPTION_OVERRIDE = "subscription_override"
+        const val KEY_UPDATE_DISMISSED = "update_dismissed_version_code"
+
+        /** 连续失败阈值，需在协议探针阶段用真实数据确认（规划书 6.3）。 */
+        const val STREAMING_FAILURE_THRESHOLD = 3
+    }
+}

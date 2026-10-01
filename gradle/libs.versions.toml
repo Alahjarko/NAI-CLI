@@ -1,0 +1,24 @@
+[versions]
+# 与 MacNAI/macos/gradle/libs.versions.toml 对齐：共享同一份源码，工具链版本必须一致，
+# 否则 MacNAI 那边能编译的代码在这里可能编不过（尤其是 Kotlin 语言版本相关特性）。
+kotlin = "2.4.20"
+coroutines = "1.11.0"
+serialization = "1.11.0"
+okhttp = "5.5.0"
+bouncycastle = "1.86"
+sqliteJdbc = "3.53.4.0"
+jna = "5.19.1"
+
+[libraries]
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+bouncycastle = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
+sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqliteJdbc" }
+jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
+
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

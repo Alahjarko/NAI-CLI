@@ -1,0 +1,503 @@
+{
+  "source": "MacNAI/macos/composeApp/src/jvmMain",
+  "commit": "fa391f5a1e304fde70f7de0be782ab255cf00038",
+  "note": "Hashes record the working-tree snapshot before CLI portability patches, not a claim of clean upstream state.",
+  "files": [
+    {
+      "path": "kotlin/net/pocketnai/core/AppError.kt",
+      "sha256": "76d2090781c1043d27262fe14892ae6380311ae4a9eda79899bdf8e0a480ca1b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/core/Hashing.kt",
+      "sha256": "281c90ba463c7f10f9a59dc7d3836b4b9c5e26aa60de8bfee2dcef40cbb5301b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/core/LogRedaction.kt",
+      "sha256": "4e3093ba504f1ee25e0906a1c9479d31f4dca9640af6508bc56a0eec71114aaa"
+    },
+    {
+      "path": "kotlin/net/pocketnai/core/platform/Log.kt",
+      "sha256": "e751b2f9f9442869de32add603303434396dc2ab0fa880ee746bef6469be0063"
+    },
+    {
+      "path": "kotlin/net/pocketnai/core/platform/PlatformEnvironment.kt",
+      "sha256": "f2db15d8b8d128b8bdc8dcd0ff67aedd1468d1225429fd683408fa44c0836ae8"
+    },
+    {
+      "path": "kotlin/net/pocketnai/core/platform/KeyValueStore.kt",
+      "sha256": "e3c0d1c2a64c5b1cb86a25e17332097292641fc044bb4ea3cf99bf1aaa714a0f"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/proxy/ProxySettings.kt",
+      "sha256": "da603fe23c03ff256ee73160fe041e4d3aa6a12fb008b9433486d0a7ea45a923"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/update/UpdateRelease.kt",
+      "sha256": "31489ee48c46237caebbc9c49c1d0f6068e47a83eebf24730113cd4ad63c82ea"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/auth/NovelAiAccessKeyDeriver.kt",
+      "sha256": "0d21c69da89e6a141a3529ccbe2820639e809b90008a24680b09280a565f1499"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/auth/AccessKeyDeriver.kt",
+      "sha256": "aaf0fd7cdb75e333eef96ccdb2dea1ad8779f5c91e836d1c646196ca9945631d"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/inpaint/MaskGeometry.kt",
+      "sha256": "35c1b39630cfe852891adf1733c1f6652caf82313d30272a0bd2c18c010bdf69"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/inpaint/MaskConvention.kt",
+      "sha256": "037abc0cf1f2838064c9a57ea91e5283b3254875778e5548c79b3673adae28a7"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/image/LiveReferencePathsProvider.kt",
+      "sha256": "9c0424ff39354a5fe47bdeecbbd4145b69a6230bc283ad2ba052d0636d3cd18b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/image/ImageGeometry.kt",
+      "sha256": "27c7e543d0fb0583ace05a0ad432becff5296b6f11b146113650a492c4ce8af3"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/image/ResolutionPlanner.kt",
+      "sha256": "81338d3cc2a9629d93c0401e5b9ca99d2a3ea2314414049ad0d2f0250bc03625"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/image/ReferenceImageEncoder.kt",
+      "sha256": "db161086b7d4c2b3f49ea5a8d716b175e6689e7effc06d65aab6e1e57084543c"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/image/ReferenceImageImporter.kt",
+      "sha256": "31fe106069fcff08c7511e6c089833a5c763bd7f5784a7e6a5d90774b8aed173"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/prompt/PromptWeightScanner.kt",
+      "sha256": "323d3e070870cbd717233229735309f5bf86b52ff93e9160a715434a1dbbdb38"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/prompt/PromptRandomizer.kt",
+      "sha256": "ebd37f7f4bd7c59eb91d78595d2feae278bd37560ab7dbea536e014755589c71"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/prompt/PromptTagEditing.kt",
+      "sha256": "432469a349b663905627238b78e7d468bfb2fc801dc1b3b1ba8d6556b2d2c02b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/prompt/TagSuggestionSource.kt",
+      "sha256": "276e1d1b3beac99062e7b271e5c7f08c3d1080711d972685257a96e1dc27f7a2"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/prompt/PromptComposition.kt",
+      "sha256": "f7877e05df4d83c68fc947efc6615c656aa1dbc16baf0fd77c7f2e9073c60715"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/prompt/PromptTitle.kt",
+      "sha256": "70d24ede5c025b0b919a58cfa3792d6f809353fa2e8ba4ec1a5ae2b514cc6859"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/prompt/EmphasisSyntax.kt",
+      "sha256": "2bd5c26d02cbe50b0a9f0497d13a19913afea442a46e52e4205504e676a5f675"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/ModelProfile.kt",
+      "sha256": "8d55854410b28bc2a30f0aa572daf38e16b230729932c6d20d5fe3014812be8e"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/ImageModel.kt",
+      "sha256": "90040606c956cbf00f0e1a82ce230cf5ecf0e00c343ed62edc5f57a1fda12928"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/ThemeMode.kt",
+      "sha256": "12545ec335b594c6fee96f32aab89bfb177da8be232c1fd7b1f73599776b1092"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/GalleryTimeline.kt",
+      "sha256": "af0ace1b009b3eba0023d9d12fbfc769ce68983d8a471b5584c6673620ab4cc4"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/ModelCatalog.kt",
+      "sha256": "9d43e42f06e9f0545686b3cf8beb0dbe51e1dc0e052935af0c6d05923bc5d2f2"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/Sampler.kt",
+      "sha256": "949d53ae5e7e5535518357fa5e4c3f42a7e3923a8d98ace4813164cfb0134393"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/GenerationRequest.kt",
+      "sha256": "9f657d49647781ede905f1f497e31698b007b9df7ca712d70be9120b05e09178"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/Generation.kt",
+      "sha256": "c2174f325b3648bb779d43966c742d58e677e9dd53f1f0c7977b1f7229a4e4e1"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/GenerationDraft.kt",
+      "sha256": "78966dcd298de030aea9d032c39ecf5d3061e465979c32ab458a4ebe2a190ab8"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/GalleryItem.kt",
+      "sha256": "e1830268408868fb5a4b5332b59ce5480757687f3b8bf1ee6bb4ae5fe81b70eb"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/GalleryFilter.kt",
+      "sha256": "37c4c654cfecc3ab71c948c42001b51bb06fe6d5f97da7d41fb1353d1d792579"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/CharacterPrompt.kt",
+      "sha256": "c3d86875aaadd48554cb9895ec06ef51cb01ab8152118121f3c1a43ec33f7635"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/ReferenceImage.kt",
+      "sha256": "2a8c7d013c8179bda66711d726a5a1676c063b347509eac06f1e77552b116c9c"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/PromptFavorite.kt",
+      "sha256": "fd8b311457fe5b4fac2258704ccb5bf879b3e9b89550976600d089994a4b968a"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/QualityTags.kt",
+      "sha256": "cf6380282a3ce775d174d770426f38a8af1f938543c204e5def8703d1a443ee4"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/model/GenerationParams.kt",
+      "sha256": "d34b3ce7866844af2675ed0d558e8a2b046cba9f6622245bc6803fb40a42dd3c"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/account/SavedAccount.kt",
+      "sha256": "2a832b667fd14432837956aed975cd1860ecfe1b4e35b80c520fb0a45778d39c"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/metadata/PngTextWriter.kt",
+      "sha256": "e6ddd8dc56cc6e586c35395b8a6f62c1193b496a8dcc344510bcfe53cfe2a6bb"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/metadata/PngTextChunks.kt",
+      "sha256": "9d47d92b41fa3ac190d7a0bea2e4ef606ab3b9c7e27a6bb7cd28dc57532e625f"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/metadata/NovelAiMetadataParser.kt",
+      "sha256": "7c4cabefea92bb5920b87656554e69fcc8ae75433493950d69a12a688e199ac5"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/metadata/ImageMetadataInspector.kt",
+      "sha256": "b27da3ffebce121503acbe1fe7ff42a75ea346e8cffced1cae0b0d1d8b8f3db8"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/metadata/NovelAiImageMetadata.kt",
+      "sha256": "fdf32877aa31258a696d830e3a6e856b85020d227b13c5cdc2e2c6141de38c72"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/metadata/MetadataImportPlanner.kt",
+      "sha256": "eebe1dc33b972e3dc49adc9d263736764da606f42fc5f394da165d66db54de0e"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/NovelAiPaidAnlasFormula.kt",
+      "sha256": "5e2e1f3af326dd13b8544c731b2da7fd88cd975be6c5ee5c33e145f37bb700ef"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/GenerationCostEstimate.kt",
+      "sha256": "d678fa039ff2ed3e670c6a8d44618feef888ad06d88fee079e61a14b11dfb24a"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/PaidAnlasFormula.kt",
+      "sha256": "d6bf4cf53387cd9d2152ce824173b6946822ddd67f7780381d686f41be472f69"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/AnlasCostCalculator.kt",
+      "sha256": "347c1891f0ba65deb7146b470e7d34ebaefce94d368d36b07bb2ba0246d1a0d7"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/SubscriptionStatus.kt",
+      "sha256": "fa6ec23f4041c61e5b616755b40bd68ac85032e0b940667ccd9fcadd932f3ddf"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/SubscriptionTier.kt",
+      "sha256": "8fd6ecf2cb40a1bfc87788ae20e488b232eb85bf720e4df558319a47edf86801"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/UpscaleCost.kt",
+      "sha256": "4fb96b38531cfb830a0f0441d80a91e1bd271c7ca1eef8e0566bc547688d7dfc"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/AnlasPricingContext.kt",
+      "sha256": "db633b57fb9a5100dcfa083c9dac465122b1e8cc7bfe24085f78977eff8dab78"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/SubscriptionBalance.kt",
+      "sha256": "f1a1806be1af39a9cbede9336efcbad0435ec0d699c6670f5803fa2fe627a6fb"
+    },
+    {
+      "path": "kotlin/net/pocketnai/domain/billing/ObservedBalanceChange.kt",
+      "sha256": "7a66b59cb7946befdf323acfac77eb343e127fc4acc0ba34bf51df79b06b4c9d"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/settings/DraftReferencePathsProvider.kt",
+      "sha256": "3cb5d1b3405b03062c5f894c7c0165b9e23347355214fa8b774c9a96efc3accb"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/settings/SettingsStore.kt",
+      "sha256": "529befeb462674baf76f1b758525e59109d2dc75e7030defbe3f940bde6e149e"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/settings/GenerationDraftCodec.kt",
+      "sha256": "8c5dc087b5c56c6ce40e930f5bc7c4d124167f6b1489f577850260ccc0ffa66e"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/settings/GenerationDraftPreferences.kt",
+      "sha256": "b9a1cf553d1859403ba37f386dd9c9d0c5d6eb893ec03be5a3eaab1e2ce44258"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/proxy/ProxyStore.kt",
+      "sha256": "5f022e9df4afb986a9cb97e3a926ea2152e5abd88a1524780a45e2b3a4abb522"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/proxy/PublicProxyNodes.kt",
+      "sha256": "d785f7db882430b3933ce80174ce7175abfc0750e7383cfe42cb6af6b244c81b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/update/UpdateDownloader.kt",
+      "sha256": "22540daba204dc3d52fe218457e0483921a2b95b120ea1dbf2f2a696c5d6256a"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/update/GitHubReleaseApi.kt",
+      "sha256": "d3b3d2e12ca1569f41890072e9e2db16b56a847b1594fbb03f1ec18a3e78ee05"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/security/Keychain.kt",
+      "sha256": "4922bd80b3b2530957f94af98368bd30fbdd9e53f1924ddc9023b749dd8894a2"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/security/SessionState.kt",
+      "sha256": "6c299940ac0fb05638c3cdb304c4c5fbe7b5e9efea60dd668143e7b869910ee0"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/security/CredentialStore.kt",
+      "sha256": "e54da1ff84c634596d411261642f5384c3fd72d651d81ed3fd400ec532a65e06"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/security/SecretBox.kt",
+      "sha256": "845f5e7bd56fcaa52aab8f41d2ccf9a9149b9da13d7714f2f522e5419a26364a"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/NovelAiApi.kt",
+      "sha256": "ea7c75a9f5b4217f828a1df8a743b7f9cecc20c43c0531e292361f19372614a5"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/NovelAiErrorMapper.kt",
+      "sha256": "13504315040c1770c3b5ea2aa9e04c64b433a859ddc84788cb47ec18899d973c"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/NovelAiRequestBuilder.kt",
+      "sha256": "d5a6bc305bb99ba1795a1f677a576e2330e86f642f8706139f3c7a100859466f"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/AccountStatusParser.kt",
+      "sha256": "55274bd374751d03cae7c7489a1eba10a70010f6b137c14a6c68bb8ee65d78b7"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/OkHttpNovelAiAuthApi.kt",
+      "sha256": "e9a3c60204adc4a439816342784861fa2deaa3bed7db366321e1a2d88ad56888"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/AccountReadErrorMapper.kt",
+      "sha256": "823ec26ad6bb0666f77366c16fa799dfd8391838bc94e16798982ff0b578da99"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/NovelAiAuthApi.kt",
+      "sha256": "cf064089dbd837c315e1586df8921f32f22645a7da4bc3fd9be5cdf0d3ea9bb4"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/RedactingHttpLogger.kt",
+      "sha256": "3dd11ea2098f5a4c65b71cac314dc26294a8a14dfd6f798a554fe19a66f5c9c6"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/OkHttpNovelAiApi.kt",
+      "sha256": "cc3328a69a27d76d3d63621a6b40348088e450e2ac7763f51820f4863bf389bf"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/ProxyNetwork.kt",
+      "sha256": "aecf050cbf13e3599f587ab95c198437a791728dac37b3dac376d71d65195ba1"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/SubscriptionBalanceParser.kt",
+      "sha256": "09d86719176b261330a0aa9dfcb246b6f61febedbceeec903b948509351e928d"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/NovelAiTagSuggestionSource.kt",
+      "sha256": "376318964de45915aa69fc223472196d5d8330ba26555489b5f93fe1792142ec"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/PngValidator.kt",
+      "sha256": "95de3c109575c05d5da97f2cd6a1a715a28a2ad21b9cdd57bcd330da4debf68e"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/GenerationStreamParser.kt",
+      "sha256": "bbcb4a6a36881036bcfe5d6b19f70d0e430dd1fdc8ee343b84f43035d9f1c808"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/NovelAiAuthErrorMapper.kt",
+      "sha256": "c5241643e536d1544599f1f92a65f9f15c6d9b2a4e44837b71f7fdd3bd81f545"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/SseFrameReader.kt",
+      "sha256": "7762584def09c8484cee1b9be5e488a3ec020c62b4d7782d682c2068dddd5d92"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/network/ZipImageExtractor.kt",
+      "sha256": "d2e44193f23c86fe5f1d7ef0013ea8d39825c5fbb8500c4acf38437d8d77a42f"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/image/OutputImageProcessor.kt",
+      "sha256": "f8540a4369b1faa636c4eb68a6d1678ec0e1d3b2aa0139cfc2d9eedb3c78474c"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/image/ReferenceImageProcessor.kt",
+      "sha256": "16eed2d59ad00b7abdff572cc60beda12c3beb50297a729697b5f1486e92f65b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/image/MaskImageProcessor.kt",
+      "sha256": "c9a1e79c4dbefe89b24369535b5b7259a7324acd8547bcdf5b6546a017123354"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/image/AndroidImageMetadataInspector.kt",
+      "sha256": "5a88ccb62355a65f8a7ee58a93d02f5060dd27706f4bc28bb56d5dcf9690e5eb"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/PromptFavoriteDao.kt",
+      "sha256": "a3d537f44856d20f3ccfaba78ba3184f7641d4862d367e7769cf773cc3958686"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/FavoriteImageEntity.kt",
+      "sha256": "76275e57c47bf0a0f847f5f0f2eb234ea723854ec832eabb97817168a8f43164"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/Mappers.kt",
+      "sha256": "36c5197dab0aed0437c8b5c4d14cc323bd5bdffda31a24e74ecb6e1009071f7b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/SqliteSupport.kt",
+      "sha256": "6c1259c5950bb37f3515500492f96214032df0b52a1f09e5cc0506294cb0e5fe"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/GeneratedImageEntity.kt",
+      "sha256": "1521b08f17beb0791784bcce6e2e0dc490a0fc181911cb5e9a56173532239d8e"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/PocketNaiDatabase.kt",
+      "sha256": "2ac2e65381679895669c46ec5f9fb6ae26cd97dccc2fbc3c5416ad2802051ff9"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/JdbcAnlasTransactionDao.kt",
+      "sha256": "b3ad25300c77e20236d4d0dc43aab0abd51e952b8fedd19323f46e0c3cdfe966"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/GenerationEntity.kt",
+      "sha256": "16a65341ae44e2a6d119d39d3e7642e203e02e4383961604f49dc764a2f275cf"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/AnlasTransactionDao.kt",
+      "sha256": "03f65a04aafd5bba67f79e577b569b432c70fb0b4d13074eaba9f8ce94fec958"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/JdbcGenerationDao.kt",
+      "sha256": "9c39b5a2526a50248726ba5b306fe954ed96fbc3ee801198139962f366fa4922"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/ReferenceImageEntity.kt",
+      "sha256": "703aafce1710075f9e79125a88bce632b7fca58cb6d40958ca6e43f69c8859f5"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/GalleryImageRow.kt",
+      "sha256": "1a45b643bd6811f3750e80ea774315daacdef8c8331c8b53ae05b0994555f48d"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/JdbcPromptFavoriteDao.kt",
+      "sha256": "0ffaf1361cdb3a080b4360bc3496dcd3df985f7c05d474b15f22be45fb3e13aa"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/PromptFavoriteEntity.kt",
+      "sha256": "983b5fb0a127384bd9970de06dc491a6bb1715a73b9f84a080dbb69f223c60db"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/JdbcFavoriteImageDao.kt",
+      "sha256": "89108581fd81d1fa9d45836e2c57f7e61ea9dd8a38101f68b66b86c6750c8dde"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/SchemaDefinitions.kt",
+      "sha256": "af1b0db4ab88a09402606fc7c524e9fccee90ea44a5d3e1dc4403782f6635542"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/AnlasTransactionEntity.kt",
+      "sha256": "6dea913873b0d2be69ab38c549212aaa80970983497d8bd4238c018df3754cd7"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/FavoriteImageDao.kt",
+      "sha256": "2ae5dbdb62db67b76ceb9ed33ea013a5b588c1a6e3e0c21020fb8b8df7bdd18b"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/local/GenerationDao.kt",
+      "sha256": "a8f1b5a4c95710b8d1a30592de3a204ae87c22713b18c42b4355026d263be252"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/files/GenerationFileStore.kt",
+      "sha256": "227d312ab96663c5d138702b1890279b4993f54c096326af8783fb696d871afe"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/export/MediaStoreExporter.kt",
+      "sha256": "89ecf9e9b6987ab00bb262071d6c3db54d4ba83ea88e3d7f49e4bc3f75547213"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/account/AccountAdder.kt",
+      "sha256": "6c3b986ed1c596f9feb7c6e7659b4c2a50f52a9654783a9eeabb5e5977df1d56"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/repo/AnlasLedgerRepository.kt",
+      "sha256": "0efc731c29fbbcbf751047c6933d77d8f491689544155727f8af5099d9b30efc"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/repo/GenerationRepository.kt",
+      "sha256": "f2d09c51429a578d452676e7e454c7dc390dbf1575d6193b525474d3cb577558"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/repo/GenerationEvent.kt",
+      "sha256": "0940fd47e934345daeab851c04fd390f00515857a1f895792a366ab6413c92a8"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/repo/FavoriteImageRepository.kt",
+      "sha256": "768f3ffa6d8f01e2c6459a3b23607360ed49af5483c699809fbba682b4a5acb9"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/repo/AccountBalanceRepository.kt",
+      "sha256": "ca89bfc63f0dddad66efa64e5f2874ac4d6954b27a89d0602125dc0f965666cd"
+    },
+    {
+      "path": "kotlin/net/pocketnai/data/repo/PromptFavoriteRepository.kt",
+      "sha256": "5fcc5621faba83c8b52c1bdf6bcd23ae6be73be38bb2628f7916518cdcf2efec"
+    },
+    {
+      "path": "kotlin/net/pocketnai/di/AppContainer.kt",
+      "sha256": "3be4e30183b7793178b7dabfaa02e4a76693f116ee296f0d411d85fa8e085d6f"
+    },
+    {
+      "path": "kotlin/net/pocketnai/ui/state/GenerationPreviewStore.kt",
+      "sha256": "ab59889697f755cbab7593ee492b375006a946502a0f5425e8c45afb884d488d"
+    },
+    {
+      "path": "kotlin/net/pocketnai/ui/state/GalleryOrderSnapshot.kt",
+      "sha256": "8a566b5b2c5ddca0a680043ed509c2eac06585b85ffa27160f40b09b58837d76"
+    },
+    {
+      "path": "kotlin/net/pocketnai/ui/state/GenerationDraftStore.kt",
+      "sha256": "ed3ce6f2e75c162998cf395e5d52bdb6db54a59782aa758020ce8244858eacfa"
+    },
+    {
+      "path": "kotlin/net/pocketnai/BuildConfig.kt",
+      "sha256": "31b1d573c8d4efb6d610d91106b4717d5fc0b3488bbdab42bf76e4fcd671003f"
+    },
+    {
+      "path": "resources/public_proxy_nodes.enc",
+      "sha256": "9f10dbc73fced5c440226ca3025bc71762812336e6f86665006b50166a7c672d"
+    }
+  ]
+}
