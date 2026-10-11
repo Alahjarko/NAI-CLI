@@ -10,6 +10,46 @@ launcher = root / "build/install/nai/bin" / ("nai.bat" if os.name == "nt" else "
 env = dict(os.environ)
 env.pop("NAI_TOKEN", None)
 env["NAI_CLI_SPEND_DISABLED"] = "1"
+
+
+def diagnose_windows_path(directory):
+    """Keep failed launcher/path checks inspectable without touching credentials."""
+    if os.name != "nt":
+        return
+    source = r'''
+import java.nio.file.*;
+import java.nio.charset.Charset;
+import java.sql.DriverManager;
+import java.util.Arrays;
+class PathProbe {
+    static void probe(String label, String value) {
+        System.out.println(label + " codepoints=" + Arrays.toString(value.codePoints().toArray()));
+        Path path = Path.of(value);
+        System.out.println(label + " exists=" + Files.isDirectory(path));
+        try (var connection = DriverManager.getConnection("jdbc:sqlite:" + path.resolve("probe.db"))) {
+            System.out.println(label + " sqlite=OK");
+        } catch (Exception failure) { failure.printStackTrace(); }
+    }
+    public static void main(String[] args) {
+        System.out.println("charset=" + Charset.defaultCharset() + " native=" + System.getProperty("native.encoding"));
+        probe("env", System.getenv("NAI_SMOKE_DATA_DIR"));
+        probe("argv", args[0]);
+    }
+}
+'''
+    with tempfile.TemporaryDirectory(prefix="nai-path-probe-") as probe_dir:
+        path = Path(probe_dir) / "PathProbe.java"
+        path.write_text(source, encoding="ascii")
+        probe_env = dict(env, NAI_SMOKE_DATA_DIR=directory)
+        java = str(Path(env["JAVA_HOME"]) / "bin/java.exe") if "JAVA_HOME" in env else "java"
+        result = subprocess.run([java, "--enable-native-access=ALL-UNNAMED", "--class-path",
+                                 str(root / "build/install/nai/lib/*"), str(path), directory],
+                                env=probe_env, capture_output=True, timeout=45)
+        print("Windows path diagnostic:", result.returncode,
+              result.stdout.decode("utf-8", errors="replace"),
+              result.stderr.decode("utf-8", errors="replace"), flush=True)
+
+
 with tempfile.TemporaryDirectory(prefix="nai smoke 空格 ") as directory:
     config = str(Path(directory) / "isolated-config")
     env["XDG_CONFIG_HOME"] = config
@@ -22,6 +62,8 @@ with tempfile.TemporaryDirectory(prefix="nai smoke 空格 ") as directory:
     ]:
         command = [str(launcher), *args, "--data-dir", directory]
         result = subprocess.run(command, capture_output=True, env=env, timeout=45)
+        if result.returncode != 0:
+            diagnose_windows_path(directory)
         assert result.returncode == 0, (args[0], result.returncode,
                                        result.stdout.decode("utf-8", errors="replace"),
                                        result.stderr.decode("utf-8", errors="replace"))
