@@ -15,6 +15,7 @@
 | 任何命令启动都会初始化 grant 目录 | 闸门延迟初始化；离线查询不触碰授权目录 |
 | POSIX 文件权限操作直接用于 Windows | POSIX 设私有目录权限；Windows 保留用户配置目录继承的 ACL，避免变成只读 |
 | Windows 替换已有文件时可能退化成截断写入 | 首选项与 grant 使用同目录唯一临时文件及 `Files.move(REPLACE_EXISTING)`；优先原子替换 |
+| Windows Java 启动器按 ANSI 代码页损坏中文参数，导致 SQLite 无法打开路径 | 安装启动器入口通过 Windows UTF-16 命令行恢复参数；CLI stdout / stderr 明确输出 UTF-8 |
 | 缺少跨平台回归入口 | 三平台 CI、安装包 smoke、可选 Linux / Windows 原生凭据往返测试 |
 
 ## 凭据实现边界
@@ -61,12 +62,15 @@ CI 配置已经写入 `.github/workflows/cross-platform.yml`，但配置存在�
 合并云环境 Linux x86_64 / Temurin JDK 25.0.4.1 / Python 3.12.14，开发分支 `feat/prompt-processing`，基线 `2754cd724c9a6459973fdf28826916519bd0233f`：
 
 - 从 PocketNAI `b0c04bbade137e699c3eed848f0c71d649bf7190` 导入选定纯 Kotlin 提示词组件，记录于 `pocketnai-prompt-snapshot.json`。新增文件/stdin、宏、随机模板种子和完全离线 `prompt`；预设、权重与 V5 文字行为见 [PROMPTS.md](PROMPTS.md)。
-- `check installDist distZip --no-daemon --offline` 通过，126 项默认离线测试通过（新增提示词 20 项），0 失败、0 错误、0 跳过；源码契约通过。
+- `check installDist distZip --no-daemon --offline` 通过，131 项默认离线测试通过（提示词 20 项、SQLite/history 2 项、Windows 参数恢复 3 项），0 失败、0 错误、0 跳过；源码契约通过。
 - 安装启动器 smoke 的原四组和提示词四组通过：文件/宏/角色/复现、stdin、模型请求体/文字/官方随机语法、结构化参数错误。临时路径包含中文与空格；确认未初始化 grant 配置。
 - 云验证的 Gradle 父进程与安装启动器始终设 `NAI_CLI_SPEND_DISABLED=1`。因为已有 SpendGate 测试需要模拟许可状态，已获授权的外部 init 脚本仅在审计过的默认离线测试 worker 中移除该变量；不修改产品闸门。真实 Token 未提供，原生凭据测试仍排除。
-- 开发产物为 `nai-0.3.0-SNAPSHOT.zip`，尚未发布。本轮没有执行 macOS/Windows runner；此前 Linux/macOS CI 通过和 Windows `history` smoke 失败属于先前记录，本轮未修复或重新验证该 Windows 问题。
+- Windows `history` 旧故障已定位：同一中文路径通过环境变量可打开 SQLite，Java 启动器传入的参数却把中文变为 `?`（原生代码页 `Cp1252`）。入口使用 `GetCommandLineW` / `CommandLineToArgvW` 恢复安装启动器的参数，在 `finally` 释放解析内存；非对应启动形式、JVM 参数文件或参数展开仍保留 JVM 结果。依据：[Microsoft Unicode 命令行 API](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-commandlinetoargvw)。
+- 修复提交 `93a53b28e155747816c61a1505d9b7f5d627b93d` 的 [push CI](https://github.com/Alahjarko/NAI-CLI/actions/runs/38124134105) 与 [PR CI](https://github.com/Alahjarko/NAI-CLI/actions/runs/38124136691) 三平台全部通过。Windows 实际执行完整八组 smoke 与唯一假凭据 service 的原生往返；Linux 的隔离 Secret Service 往返也通过。macOS 未执行真实钥匙串测试。
+- 本地另以 `-Dstdout.encoding=windows-1252 -Dstderr.encoding=windows-1252` 验证全部 smoke，UTF-8 JSON 与中文 stdin 保持正确。
+- 开发产物为 `nai-0.3.0-SNAPSHOT.zip`，包含 `PROMPTS.md`、提示词来源快照清单与本记录；尚未创建 Release。
 
-没有登录真实账号、读取真实凭据、调用真实生成/超分、签发 grant、推送、创建 PR 或触发发布 workflow。服务端接受性与真实出图效果没有在这轮离线验证中确认。
+本轮变更已推送至开发分支并创建 PR。没有登录真实账号、读取真实凭据、调用真实生成/超分、签发真实 grant 或触发发布 workflow。服务端接受性与真实出图效果没有在这轮离线验证中确认。Windows ARM64、无桌面 Linux 配置与真实账号交互仍需单独验证。
 
 ## 公开发行准备（2026-10-01）
 
