@@ -115,15 +115,20 @@ object NovelAiRequestBuilder {
          * 我们走有文档的 SSE 端点，因此不依赖服务端的默认值。
          */
         streaming: Boolean = false,
+        preparedPrompts: net.pocketnai.domain.prompt.PromptTemplates.Prepared? = null,
     ): JsonObject {
         val params = request.params
         val normalized = profile.normalize(params)
 
-        // 质量标签按官方网页版的行为追加到提示词末尾，而不是交给服务端处理。
-        // 官方 UI 会明确显示 "Added to the end of the prompt: ..."，
-        // 因此这里必须真的改写提交给模型的正向提示词。
-        val positive = applyQualityTags(normalized.prompt, normalized.qualityTags)
-        val negative = normalized.negativePrompt
+        // 使用冻结的本地模板结果；直接调用 builder 时按相同模型预设补齐。
+        // 显式 Text: 前插入质量标签，并保留后续单管道 caption。
+        val qualityPreset = if (normalized.model.family == net.pocketnai.domain.model.GenerationFamily.V4_5 &&
+            normalized.qualityTags == net.pocketnai.domain.model.QualityTagsOption.LIGHT)
+            net.pocketnai.domain.model.QualityTagsOption.STANDARD else normalized.qualityTags
+        val quality = preparedPrompts?.positive ?: applyQualityTags(normalized.prompt, normalized.qualityTags, normalized.model)
+        val negative = preparedPrompts?.negative ?: net.pocketnai.domain.prompt.NovelAiPromptPresets.resolveNegative(
+            normalized.model, normalized.undesiredContentPresetIndex, quality, normalized.negativePrompt,
+        )
 
         val baseImage = upstreamImages[ReferenceRole.IMG2IMG]?.firstOrNull()?.takeIf { it.isNotEmpty() }
         val maskImage = upstreamImages[ReferenceRole.INPAINT_MASK]?.firstOrNull()?.takeIf { it.isNotEmpty() }
@@ -133,6 +138,11 @@ object NovelAiRequestBuilder {
         val useInpaint = request.mode == GenerationMode.INPAINT &&
             baseImage != null &&
             maskImage != null
+        val autoText = normalized.model.family == net.pocketnai.domain.model.GenerationFamily.V5 &&
+            (!useInpaint || normalized.model == net.pocketnai.domain.model.ImageModel.V5_FULL)
+        val positive = if (autoText) net.pocketnai.domain.prompt.NovelAiTextPrompt.appendAutomatic(
+            quality, normalized.characters, useCoordinates = true,
+        ) else quality
         val directorSources = upstreamImages[ReferenceRole.DIRECTOR].orEmpty()
         val directors = request.referencesOf(ReferenceRole.DIRECTOR)
         // 数量对不上说明编码环节漏了图：宁可不发这组字段，也不发一个对不齐的数组。
@@ -159,7 +169,11 @@ object NovelAiRequestBuilder {
             put("n_samples", normalized.sampleCount)
             put("seed", normalized.baseSeed)
 
-            put("ucPreset", normalized.undesiredContentPresetIndex)
+            val preset = net.pocketnai.domain.prompt.NovelAiPromptPresets.preset(normalized.model, normalized.undesiredContentPresetIndex)
+            put("ucPresetId", preset.id)
+            put("qualityPresetId", qualityPreset.name.lowercase(java.util.Locale.ROOT))
+            put("tag_hint_uc_preset", preset.tagHint)
+            put("tag_hint_qt", qualityPreset.tagHint)
             // 质量标签已经由本应用显式写进提示词，因此关闭服务端的自动追加，
             // 否则同一段文本可能被叠加两次。
             put("qualityToggle", false)

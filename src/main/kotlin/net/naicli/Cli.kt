@@ -64,6 +64,8 @@ class Args private constructor(
 
     fun all(name: String): List<String> = values[name].orEmpty()
 
+    fun optionNames(): Set<String> = values.keys + switches
+
     fun req(name: String): String =
         str(name) ?: throw CliFailure(ExitCode.USAGE, "缺少必填选项 --$name")
 

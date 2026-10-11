@@ -140,6 +140,7 @@ class GenerationRepository(
     fun generate(
         request: GenerationRequest,
         promptTemplate: String,
+        preparedPrompts: net.pocketnai.domain.prompt.PromptTemplates.Prepared? = null,
     ): Flow<GenerationEvent> = flow {
         val generationId = idGenerator()
         val startedAt = clock()
@@ -258,6 +259,7 @@ class GenerationRepository(
             request = request.copy(params = effectiveParams),
             upstreamImages = encodedImages,
             streaming = useStreaming,
+            preparedPrompts = preparedPrompts,
         )
 
         var archiveToDelete: File? = null

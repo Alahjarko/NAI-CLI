@@ -105,17 +105,22 @@ object CharactersFromArgs {
     }
 
     private fun parse(raw: String, nth: Int): CharacterPrompt {
-        val bang = raw.indexOf(NEGATIVE_SEPARATOR)
+        // Macro reference boundaries may contain adjacent !! or @; they are prompt content.
+        val macroRanges = Regex("!macro:[^!]+!|⌜macro:[^⌟]+⌟").findAll(raw).map { it.range }.toList()
+        fun literal(index: Int) = macroRanges.none { index in it }
+        val bang = (0 until raw.length - 1).firstOrNull {
+            raw.startsWith(NEGATIVE_SEPARATOR, it) && literal(it) && literal(it + 1)
+        } ?: -1
         val head = if (bang >= 0) raw.substring(0, bang) else raw
         val negative = if (bang >= 0) raw.substring(bang + NEGATIVE_SEPARATOR.length) else ""
 
-        val at = head.lastIndexOf(POSITION_SEPARATOR)
+        val at = head.indices.lastOrNull { head[it] == POSITION_SEPARATOR && literal(it) } ?: -1
         val prompt = if (at >= 0) head.substring(0, at) else head
         val positionSpec = if (at >= 0) head.substring(at + 1) else null
 
         // 字段顺序写反（把站位塞到负面里）会静默变成一个带 '@' 的负面提示词。
         // 只在"head 里没有站位、负面里却有"时报错，正常使用不受影响。
-        if (positionSpec == null && negative.contains(POSITION_SEPARATOR)) {
+        if (positionSpec == null && negative.indices.any { negative[it] == POSITION_SEPARATOR && literal(bang + NEGATIVE_SEPARATOR.length + it) }) {
             throw usage(nth, "字段顺序应为 '$SYNTAX'，站位不能写在 '$NEGATIVE_SEPARATOR' 之后")
         }
         if (prompt.isBlank() && negative.isBlank()) {

@@ -13,24 +13,31 @@ import net.naicli.commands.CharactersFromArgs
 import net.naicli.commands.GrantsCommand
 import net.naicli.commands.ReadOnlyCommands
 import net.naicli.commands.SpendCommands
+import net.naicli.commands.PromptCommand
+import net.naicli.platform.WindowsArguments
 import net.pocketnai.BuildConfig
 import java.io.File
+import java.io.PrintStream
+import java.nio.charset.StandardCharsets.UTF_8
 import kotlin.system.exitProcess
 
 /** 全部命令。`help` 与 `schema` 都从这张表生成，因此不会与实现脱节。 */
 private val commands: List<CommandSpec> =
-    ReadOnlyCommands.all + AuthCommands.all + SpendCommands.all + listOf(ApproveCommand.spec, GrantsCommand.spec)
+    ReadOnlyCommands.all + AuthCommands.all + SpendCommands.all + listOf(PromptCommand.spec, ApproveCommand.spec, GrantsCommand.spec)
 
 private val prettyJson = Json { prettyPrint = true }
 
 fun main(argv: Array<String>) {
+    // JSON and piped text use UTF-8 even when Windows' console/native code page differs.
+    System.setOut(PrintStream(System.out, true, UTF_8))
+    System.setErr(PrintStream(System.err, true, UTF_8))
     System.setProperty("java.awt.headless", "true")
     val code = try {
-        dispatch(argv.toList())
+        dispatch(WindowsArguments.restore(argv).toList())
     } catch (failure: CliFailure) {
         // CliFailure 可能出现在解析 --json 之前（例如命令名就不认识），
-        // 那时只能按文本报错；已经进到命令里的，由命令自己的 reporter 负责。
-        System.err.println("错误：${failure.message}")
+        // 显式 --json 时仍给结构化错误；已经进到命令里的，由命令自己的 reporter 负责。
+        Reporter(json = argv.any { it == "--json" || it.startsWith("--json=") }).fail(failure)
         failure.exitCode
     }
     System.out.flush()
@@ -213,4 +220,4 @@ private fun commandHelp(spec: CommandSpec): String = buildString {
 }
 
 /** CLI 自己的版本号，与 MacNAI 的 [BuildConfig.VERSION_NAME] 不同源。 */
-const val CLI_VERSION: String = "0.2.0"
+const val CLI_VERSION: String = "0.3.0-SNAPSHOT"

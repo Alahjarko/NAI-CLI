@@ -1,0 +1,43 @@
+{
+  "source_repository": "Alahjarko/PocketNAI",
+  "source_commit": "b0c04bbade137e699c3eed848f0c71d649bf7190",
+  "note": "Selected pure Kotlin prompt snapshot. ModelProfile, ModelCatalog and request/repository integration are adapted in NAI-CLI; original MacNAI snapshot provenance remains in upstream-snapshot.json.",
+  "files": [
+    {
+      "path": "prompt/PromptComposition.kt",
+      "sha256": "0d91eea85a149090ace387a12a1bfcca1369b1ceef8f33c1f2dbf23847b1a8a7"
+    },
+    {
+      "path": "prompt/PromptRandomizer.kt",
+      "sha256": "305ed1e396c6ae1f2ee5c0795aa16265bac330411f488272eb59023ae55e026d"
+    },
+    {
+      "path": "prompt/PromptWeightScanner.kt",
+      "sha256": "b7663931993c5990b3564974d743ff1cc9b6fd53af429815244abcee212f6af0"
+    },
+    {
+      "path": "prompt/PromptMacros.kt",
+      "sha256": "148f28673c6941315d3e1611adb5f8d1a7b30a26d2a70bd0dc764f2d0a767497"
+    },
+    {
+      "path": "prompt/PromptChunks.kt",
+      "sha256": "c4af79f8f444e6f257422f250abbfce69038baa1ac2d037d9c2822716f9ccc6c"
+    },
+    {
+      "path": "prompt/PromptTemplates.kt",
+      "sha256": "0439293fded9b30979b6be986616d50a4d69ca28e95b53353db363c52eb5cc78"
+    },
+    {
+      "path": "prompt/NovelAiTextPrompt.kt",
+      "sha256": "a75f8ff30e7e02025cc58aa1968217b62ceaf298ac5d53f3900335ff5d6fc4b8"
+    },
+    {
+      "path": "prompt/NovelAiPromptPresets.kt",
+      "sha256": "7beb17f528e99b473635be1471b19c4fd5679bacfc35afe4da1c33f154f65486"
+    },
+    {
+      "path": "model/QualityTags.kt",
+      "sha256": "26ec61f7accda476214c3c53fd5d9b01d23cbe4aab3aafa1a150cd3dc968671a"
+    }
+  ]
+}
