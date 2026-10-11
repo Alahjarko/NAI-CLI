@@ -136,7 +136,7 @@ distributions {
     main {
         contents {
             from("README.md")
-            from("docs/CROSS_PLATFORM.md") { into("docs") }
+            from(listOf("docs/CROSS_PLATFORM.md", "docs/PROMPTS.md", "docs/pocketnai-prompt-snapshot.json")) { into("docs") }
         }
     }
 }

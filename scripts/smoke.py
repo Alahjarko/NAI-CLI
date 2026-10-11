@@ -22,11 +22,15 @@ with tempfile.TemporaryDirectory(prefix="nai smoke 空格 ") as directory:
     ]:
         command = [str(launcher), *args, "--data-dir", directory]
         result = subprocess.run(command, capture_output=True, env=env, timeout=45)
-        assert result.returncode == 0, (args[0], result.returncode, result.stderr.decode("utf-8", errors="replace"))
+        assert result.returncode == 0, (args[0], result.returncode,
+                                       result.stdout.decode("utf-8", errors="replace"),
+                                       result.stderr.decode("utf-8", errors="replace"))
         payload = json.loads(result.stdout.decode("utf-8"))
         assert payload.get("ok", True), args[0]
         if args[0] == "schema":
             assert {"login", "account", "prompt"} <= {item["name"] for item in payload["commands"]}
+        if args[0] == "history":
+            assert payload["count"] == 0 and payload["images"] == []
         print(f"{args[0]}: OK")
 
     def prompt(args, stdin=None, expected=0):
@@ -34,7 +38,9 @@ with tempfile.TemporaryDirectory(prefix="nai smoke 空格 ") as directory:
             [str(launcher), "prompt", *args, "--json", "--data-dir", directory],
             input=stdin, capture_output=True, env=env, timeout=45,
         )
-        assert result.returncode == expected, (args, result.returncode, result.stderr.decode("utf-8", errors="replace"))
+        assert result.returncode == expected, (args, result.returncode,
+                                              result.stdout.decode("utf-8", errors="replace"),
+                                              result.stderr.decode("utf-8", errors="replace"))
         payload = json.loads(result.stdout.decode("utf-8"))
         assert payload["ok"] == (expected == 0), payload
         if expected:
