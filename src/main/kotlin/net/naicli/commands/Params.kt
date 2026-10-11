@@ -18,6 +18,9 @@ import net.pocketnai.domain.model.QualityTagsOption
 import net.pocketnai.domain.model.ResolutionTier
 import net.pocketnai.domain.model.Sampler
 import net.pocketnai.domain.model.SeedMode
+import net.pocketnai.domain.prompt.PromptTemplates
+import net.pocketnai.domain.model.GenerationRequest
+import net.pocketnai.data.network.NovelAiRequestBuilder
 
 /**
  * 命令行选项 → [GenerationParams]。
@@ -43,8 +46,14 @@ object ParamsFromArgs {
     }
 
     val options: List<OptionSpec> = listOf(
-        OptionSpec("prompt", "string", "提示词。也可用位置参数或标准输入（--prompt -）", required = true),
+        OptionSpec("prompt", "string", "提示词；也可用位置参数、--prompt-file 或标准输入（--prompt -）；必须选择一个来源"),
         OptionSpec("negative", "string", "负面提示词", default = "（空）"),
+        OptionSpec("prompt-file", "path", "UTF-8 正向提示词文件，与 --prompt/位置提示词互斥；- 表示标准输入"),
+        OptionSpec("negative-file", "path", "UTF-8 负向提示词文件，与 --negative 互斥；- 表示标准输入"),
+        OptionSpec("append", "string", "追加正向片段，可重复，按出现顺序用 PocketNAI 拼接规则连接"),
+        OptionSpec("negative-append", "string", "追加负向片段，可重复"),
+        OptionSpec("macros-file", "path", "本地 UTF-8 JSON 宏文件：名称到文本的对象，不读取账号收藏"),
+        OptionSpec("prompt-random-seed", "int", "本地 <a|b> 展开的随机种子，与图像 --seed 独立；官方 ||a|b|| 保留"),
         OptionSpec(
             "model",
             "enum:${MODEL_ALIASES.keys.sorted().joinToString("|")}",
@@ -62,8 +71,8 @@ object ParamsFromArgs {
         OptionSpec("sampler", "string", "采样器，接受 API 值或枚举名", default = "k_euler_ancestral"),
         OptionSpec("schedule", "string", "噪声调度，接受 API 值或枚举名", default = "karras"),
         OptionSpec("seed", "int", "固定 seed；不给则每次随机抽取（抽出的值会同时进请求与历史）"),
-        OptionSpec("quality-tags", "enum:standard|light|none", "质量标签（追加到提示词末尾的文本）", default = "standard"),
-        OptionSpec("uc-preset", "int", "Undesired Content 预设下标 0-3（Heavy/Light/Human Focus/None）", default = "0"),
+        OptionSpec("quality-tags", "enum:standard|light|none", "模型质量标签；V4.5 的 light 兼容为 standard；none 不追加", default = "standard"),
+        OptionSpec("uc-preset", "int", "0/1/2/3 = Heavy/Light/Human Focus/None；支持的模型可用 4 = Furry Focus", default = "0"),
         CharactersFromArgs.optionSpec(),
     )
 
@@ -78,15 +87,29 @@ object ParamsFromArgs {
             )
     }
 
-    fun build(args: Args): GenerationParams {
+    data class Prepared(
+        val source: GenerationParams,
+        val frozen: PromptTemplates.Frozen,
+    ) {
+        val params: GenerationParams get() = frozen.params
+        fun payload() = NovelAiRequestBuilder.build(
+            ModelCatalog.profileOf(params.model), GenerationRequest(params = params),
+            upstreamImages = emptyMap(), preparedPrompts = frozen.prepared,
+        )
+    }
+
+    fun build(args: Args): GenerationParams = prepare(args).params
+
+    fun prepare(args: Args): Prepared {
         val model = resolveModel(args)
         val profile = ModelCatalog.profileOf(model)
-        val prompt = readPrompt(args)
+        val input = PromptInputs.read(args)
+        val prompt = input.positive
 
         val params = GenerationParams(
             model = model,
             prompt = prompt,
-            negativePrompt = args.str("negative").orEmpty(),
+            negativePrompt = input.negative,
             size = resolveSize(args, profile),
             sampleCount = (args.int("count") ?: profile.defaultSampleCount)
                 .also { requireRange(it, 1, profile.maxSampleCount, "--count") },
@@ -106,7 +129,11 @@ object ParamsFromArgs {
             } ?: 0L,
             qualityTags = args.str("quality-tags")?.let(::parseQualityTags) ?: profile.defaultQualityTags,
             undesiredContentPresetIndex = (args.int("uc-preset") ?: profile.defaultUndesiredContentPresetIndex)
-                .also { requireRange(it, 0, 3, "--uc-preset") },
+                .also { index ->
+                    if (profile.undesiredContentPresets.none { it.index == index }) {
+                        throw CliFailure(ExitCode.USAGE, "--uc-preset 不适用于所选模型，可用：${profile.undesiredContentPresets.joinToString { it.index.toString() }}")
+                    }
+                },
             // 独立角色（char_captions）：下面的 validate 与 normalize **都不碰**它 ——
             // 领域层假设这些值来自界面上的五档按钮，因此从没为它写过校验。
             // 命令行是唯一的把关处，见 CharactersFromArgs。
@@ -136,19 +163,15 @@ object ParamsFromArgs {
                     "${profile.promptSoftLimitChars} 字（不阻断提交）。",
             )
         }
-        return profile.normalize(params)
-    }
-
-    private fun readPrompt(args: Args): String {
-        val raw = args.str("prompt") ?: args.positional.firstOrNull()
-            ?: throw CliFailure(ExitCode.USAGE, "缺少提示词：用 --prompt \"...\"，或 --prompt - 从标准输入读")
-        if (raw == "-") {
-            val piped = System.`in`.bufferedReader().readText()
-            if (piped.isBlank()) throw CliFailure(ExitCode.USAGE, "标准输入是空的")
-            return piped.trim()
+        val source = profile.normalize(params)
+        val frozen = try {
+            PromptTemplates.prepare(source, PromptInputs.macros(args),
+                args.long("prompt-random-seed")?.let { kotlin.random.Random(it) } ?: kotlin.random.Random.Default)
+        } catch (failure: IllegalArgumentException) {
+            throw CliFailure(ExitCode.USAGE, "提示词宏展开失败：${failure.message}")
         }
-        if (raw.isBlank()) throw CliFailure(ExitCode.USAGE, "提示词不能为空")
-        return raw
+        if (frozen.params.prompt.isBlank()) throw CliFailure(ExitCode.USAGE, "展开后的正向提示词不能为空")
+        return Prepared(source, frozen)
     }
 
     private fun resolveSize(args: Args, profile: ModelProfile): ImageSizePreset {

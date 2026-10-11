@@ -32,7 +32,10 @@ data class SizeConstraints(
 }
 
 /** Undesired Content 预设，对应 API 的 `ucPreset` 整数。 */
-data class UndesiredContentPreset(val index: Int, val displayName: String)
+data class UndesiredContentPreset(
+    val index: Int, val displayName: String,
+    val id: String = "none", val tagHint: Int = 0, val prefix: String = "",
+)
 
 /**
  * 参数校验问题，用于在界面上标出具体是哪一项不合法（规划书 9.1）。

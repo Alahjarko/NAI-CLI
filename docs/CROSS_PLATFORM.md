@@ -56,6 +56,18 @@ CI 配置已经写入 `.github/workflows/cross-platform.yml`，但配置存在�
 
 源文件导入前哈希位于 `upstream-snapshot.json`。它记录导入时 MacNAI 工作目录中的内容，不代表所有文件都与来源提交完全一致。后续 CLI 修改有意与导入前哈希不同。
 
+## PocketNAI 提示词开发验证（2026-10-11）
+
+合并云环境 Linux x86_64 / Temurin JDK 25.0.4.1 / Python 3.12.14，开发分支 `feat/prompt-processing`，基线 `2754cd724c9a6459973fdf28826916519bd0233f`：
+
+- 从 PocketNAI `b0c04bbade137e699c3eed848f0c71d649bf7190` 导入选定纯 Kotlin 提示词组件，记录于 `pocketnai-prompt-snapshot.json`。新增文件/stdin、宏、随机模板种子和完全离线 `prompt`；预设、权重与 V5 文字行为见 [PROMPTS.md](PROMPTS.md)。
+- `check installDist distZip --no-daemon --offline` 通过，126 项默认离线测试通过（新增提示词 20 项），0 失败、0 错误、0 跳过；源码契约通过。
+- 安装启动器 smoke 的原四组和提示词四组通过：文件/宏/角色/复现、stdin、模型请求体/文字/官方随机语法、结构化参数错误。临时路径包含中文与空格；确认未初始化 grant 配置。
+- 云验证的 Gradle 父进程与安装启动器始终设 `NAI_CLI_SPEND_DISABLED=1`。因为已有 SpendGate 测试需要模拟许可状态，已获授权的外部 init 脚本仅在审计过的默认离线测试 worker 中移除该变量；不修改产品闸门。真实 Token 未提供，原生凭据测试仍排除。
+- 开发产物为 `nai-0.3.0-SNAPSHOT.zip`，尚未发布。本轮没有执行 macOS/Windows runner；此前 Linux/macOS CI 通过和 Windows `history` smoke 失败属于先前记录，本轮未修复或重新验证该 Windows 问题。
+
+没有登录真实账号、读取真实凭据、调用真实生成/超分、签发 grant、推送、创建 PR 或触发发布 workflow。服务端接受性与真实出图效果没有在这轮离线验证中确认。
+
 ## 公开发行准备（2026-10-01）
 
 - 公开仓库忽略私人 `public_proxy_nodes.enc`；Gradle 同时排除该资源，避免本机残留文件进入发行包。

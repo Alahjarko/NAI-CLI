@@ -61,7 +61,7 @@ Windows（PowerShell）：
 .\build\install\nai\bin\nai.bat models --json
 ```
 
-`build/distributions/nai-0.2.0.zip` 同时包含 `bin/nai`、`bin/nai.bat` 和全部依赖。解压后，将其 `bin` 目录加入 PATH；需要 Java，不需要 Gradle 或源码。Linux 若解压工具丢失可执行位，执行 `chmod +x bin/nai`。
+当前开发版产物 `build/distributions/nai-0.3.0-SNAPSHOT.zip` 同时包含 `bin/nai`、`bin/nai.bat` 和全部依赖，尚未发布。解压后，将其 `bin` 目录加入 PATH；需要 Java，不需要 Gradle 或源码。Linux 若解压工具丢失可执行位，执行 `chmod +x bin/nai`。
 
 macOS / Linux 开发安装也可以使用软链接：
 
@@ -78,11 +78,26 @@ ln -sf "$(pwd)/build/install/nai/bin/nai" ~/.local/bin/nai
 
 ```bash
 nai models --json
+nai prompt --prompt 'poster saying "HELLO", <garden|forest>' --model v5-full --prompt-random-seed 42 --json
 nai cost --prompt "1girl, garden, watercolor" --assume-tier opus --json
 nai schema
 ```
 
 `--assume-tier opus` 只是假设订阅的离线报价，不代表你的账号实际享有免费权益。
+
+### 提示词处理（开发版）
+
+`nai prompt` 完全离线，不读取账号、系统凭据、余额或 grant。它与 `generate` 使用同一套提示词准备和请求体构造，适合先检查文件、宏、随机模板、独立角色、质量/负面预设、V5 文字和权重。`--json` 输出 `source`、`resolved`、`weights` 与最终 `payload`；随机图像 seed 在实际生成时才抽取，检查可复现请求时同时传 `--seed`。
+
+```bash
+nai prompt --prompt-file ./positive.txt --negative-file ./negative.txt \
+  --append "night" --append "stars" --negative-append "bad hands" --json
+printf '%s' 'cat, blue eyes' | nai prompt --prompt - --json
+nai prompt --prompt '!macro:scene!' --macros-file ./macros.json \
+  --prompt-random-seed 42 --seed 99 --character '1girl@left!!bad eyes' --json
+```
+
+这些输入参数也适用于 `cost` 和 `generate`。旧位置提示词、`--prompt`、`--negative` 与 `--character` 语法继续有效。宏文件是显式指定的 UTF-8 JSON 对象，例如 `{"scene":"<garden|forest>","outfit":"blue dress"}`；它不连接应用收藏库。完整语义、错误和输出字段见 [提示词说明](docs/PROMPTS.md)。
 
 在自己的交互终端登录（按提示输入 NovelAI API Token，输入不回显）：
 
@@ -146,6 +161,8 @@ nai account use <id>
 ## 源码独立化与后续维护
 
 `src/shared/` 保存 MacNAI 无头子集的源码快照；私人代理节点资源不随仓库分发；`docs/upstream-snapshot.json` 记录来源提交和导入前文件哈希。这里是有意维护的独立快照，**MacNAI 后续改动不会自动流入 CLI**。
+
+提示词纯 Kotlin 层另外比对并导入 PocketNAI 的 `b0c04bb` 快照；来源提交和文件哈希记录在 [pocketnai-prompt-snapshot.json](docs/pocketnai-prompt-snapshot.json)。请求体与模型配置保留 CLI 适配，使用稳定预设 ID 和 `params_version=4`；这次验证覆盖离线构造，未调用真实生成接口。
 
 更新共享代码时先比对来源，再人工合并；保留平台路径、安全存储选择、延迟初始化、读取失败不删除凭据、跨平台文件替换等适配。范围与验证状态见 [跨平台说明](docs/CROSS_PLATFORM.md)。
 
@@ -289,7 +306,7 @@ nai generate --prompt "2girls, classroom" --grant g_xxx \
 - **免费。** 官方 Anlas 公式的附加费只有三项（Precise Reference 每张 5、超额 Vibe 每张 2、Vibe 编码每张 2），`char_captions` 不在其中。加了角色报价不变，"免费组合 + 多角色"仍然免费。
 - **顺序即语义。** 请求里 `use_order` 恒为 true，`--character` 的出现顺序就是 `char_captions` 的下标，会实际影响构图。
 - **最多 5 个**（`CharacterPrompt.MAX_COUNT`）。超了直接报错，不静默截断。
-- **负面分隔符是 `!!` 而不是 `!`**，这样提示词里的单个 `!` 不会被吃掉。字段顺序固定：站位在前、负面在后；写反了会报错而不是静默错位。
+- **负面分隔符是 `!!` 而不是 `!`**，这样提示词里的单个 `!` 不会被吃掉。相邻宏引用里的 `!!` 和宏名称里的 `@` 会作为提示词保留。字段顺序固定：站位在前、负面在后；写反了会报错而不是静默错位。
 - **不进历史库。** MacNAI 的 `generations` 表没有 characters 这一列，所以 `nai history` 看不到它们，也没法从历史里复用。要看发出去了什么，用 `--dry-run`。
 
 ### 退出码
@@ -319,7 +336,7 @@ nai generate --prompt "2girls, classroom" --grant g_xxx \
 
 **算价与出图必须用同一个 Token。** `generate` 先解析出花钱用的 Token，再用它读余额算价 —— 否则会按 A 账号的订阅报"免费"、却在 B 账号上真扣钱。
 
-**CLI 会拒绝被 `normalize` 静默改写的参数。** MacNAI 的 `ModelProfile.normalize` 设计成"把非法值修好"：非法尺寸静默换成模型默认尺寸、越界步数静默夹到边界、不支持的采样器组合静默换回默认。界面上这没问题（控件产不出非法值），命令行上则是灾难 —— `--width 1000` 会安静地在 832×1216 出图，调用方拿到一张与自己请求不符的图且没有任何报错。因此 `ParamsFromArgs.build` 在 normalize **之前**按原始值校验并拒绝。提示词超长是软限制，只提示不拦（与 `GenerationRepository` 一致）。
+**CLI 会拒绝被 `normalize` 静默改写的参数。** MacNAI 的 `ModelProfile.normalize` 设计成"把非法值修好"：非法尺寸静默换成模型默认尺寸、越界步数静默夹到边界、不支持的采样器组合静默换回默认。界面上这没问题（控件产不出非法值），命令行上则是灾难 —— `--width 1000` 会安静地在 832×1216 出图，调用方拿到一张与自己请求不符的图且没有任何报错。因此 `ParamsFromArgs.build` 在 normalize **之前**按原始值校验并拒绝。模型提示词长度仍是软限制，只提示不拦（与 `GenerationRepository` 一致）；输入和宏展开另有 128 Ki 字符硬限制，见提示词说明。
 
 **`char_captions` 在领域层根本没有校验。** `ModelProfile.validate` 与 `GenerationRequest.validate` 都不看 characters，坐标一路裸传进请求体 —— 界面上那五档按钮产不出非法值，MacNAI 也就从没为它写过检查。命令行能产出任何值，所以 `CharactersFromArgs` 是唯一的把关处：超过 5 个、坐标超出 0..1、站位写错、提示词与负面都为空，一律退出码 2 拒绝，不夹取也不静默丢弃。这与上一条是同一个原则：要么照调用方说的做，要么明确说没做。
 
@@ -354,12 +371,13 @@ nai generate --prompt "2girls, classroom" --grant g_xxx \
 - `SpendSummaryTest`（10）—— 事件流 → 退不退款的映射，其中 `TIMEOUT_UNCERTAIN` 必须判为不确定失败。
 - `ArgsTest`（8）—— 手写解析器的边界。
 - `CharactersRequestTest`（6）—— 从命令行一路走到请求体：`char_captions` / `centers` / `use_coords` / `legacy_uc` 的确切形状，`normalize` 不会丢掉角色，以及独立角色**不产生** Anlas 附加费。
+- `PromptProcessingTest`（20）—— UTF-8 文件/stdin、来源冲突、宏错误与展开上限、独立随机种子、角色宏、权重区间、模型预设及 V5 文字；离线命令不打开凭据存储。
 
 
 新增跨平台测试覆盖系统识别、XDG / Windows 路径、Unicode 与空格路径、文件覆盖、Linux 凭据错误区分与脱敏、凭据读取失败不清库、外部 Token 不进入花钱路径、Windows 原生结构布局。
 
 ```bash
-python3 scripts/smoke.py   # installDist 后：schema/models/cost/history，独立临时数据目录
+python3 scripts/smoke.py   # installDist 后：schema/models/cost/history，以及提示词处理和 JSON 错误；独立临时数据目录
 ```
 
 `.github/workflows/cross-platform.yml` 配置了 macOS、Linux、Windows 的构建、测试与启动包检查；Linux 和 Windows 另跑原生凭据往返测试。`nativeStoreTest` 是显式选择的集成测试，只写入唯一测试 service 下的假值并清理，不访问应用账号，不属于默认 `check`。

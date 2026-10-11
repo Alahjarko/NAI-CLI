@@ -23,7 +23,6 @@ import net.naicli.gate.Ticket
 import net.pocketnai.core.ErrorCode
 import net.pocketnai.core.LogRedaction
 import net.pocketnai.core.Outcome
-import net.pocketnai.data.network.NovelAiRequestBuilder
 import net.pocketnai.data.repo.GenerationEvent
 import net.pocketnai.domain.billing.GenerationCostEstimate
 import net.pocketnai.domain.billing.UpscaleCost
@@ -97,7 +96,8 @@ object SpendCommands {
     // ---- generate ----
 
     private fun runGenerate(args: Args, reporter: Reporter, context: NaiContext) {
-        val params = ParamsFromArgs.build(args)
+        val prepared = ParamsFromArgs.prepare(args)
+        val params = prepared.params
         val profile = ModelCatalog.profileOf(params.model)
         val dryRun = args.has("dry-run")
 
@@ -117,7 +117,7 @@ object SpendCommands {
         val estimate = Pricing.estimate(context, params, balance)
 
         if (dryRun) {
-            val payload: JsonObject = NovelAiRequestBuilder.build(profile, params)
+            val payload: JsonObject = prepared.payload()
             val characters = params.characters
             reporter.emit(
                 buildJsonObject {
@@ -165,7 +165,8 @@ object SpendCommands {
         val events = try {
             blocking {
                 context.container.generationRepository
-                    .generate(GenerationRequest(params = params), promptTemplate = params.prompt)
+                    .generate(GenerationRequest(params = params), promptTemplate = prepared.source.prompt,
+                        preparedPrompts = prepared.frozen.prepared)
                     .toList()
             }
         } catch (t: Throwable) {

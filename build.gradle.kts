@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "net.naicli"
-version = "0.2.0"
+version = "0.3.0-SNAPSHOT"
 
 // Versioned headless snapshot; standalone builds never read a sibling checkout.
 val sharedSourceRoot = file("src/shared/kotlin")
